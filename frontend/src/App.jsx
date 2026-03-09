@@ -49,7 +49,8 @@ function App() {
         setSelectedFormat('1080p'); // Reset to a good default for new videos
 
         try {
-            const response = await axios.post('http://localhost:5000/api/info', { url });
+            const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+            const response = await axios.post(`${baseUrl}/api/info`, { url });
             setVideoInfo(response.data);
         } catch (err) {
             console.error('Fetch error:', err);
@@ -71,7 +72,8 @@ function App() {
             // instead of downloading massive 1080p blobs to your browser's RAM via axios!
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = 'http://localhost:5000/api/download';
+            const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+            form.action = `${baseUrl}/api/download`;
 
             const urlInput = document.createElement('input');
             urlInput.type = 'hidden';
