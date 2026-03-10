@@ -7,19 +7,25 @@ const path = require('path');
 require('dotenv').config();
 
 // Auto-install ffmpeg-static if missing so 1080p merge works flawlessly!
-let ffmpegPath;
-try {
-    ffmpegPath = require('ffmpeg-static');
-} catch (e) {
-    console.log('Installing ffmpeg-static for high-quality video merging...');
-    execSync('npm install ffmpeg-static', { stdio: 'inherit', cwd: __dirname });
-    ffmpegPath = require('ffmpeg-static');
-}
+// let ffmpegPath;
+// try {
+//     ffmpegPath = require('ffmpeg-static');
+// } catch (e) {
+//     console.log('Installing ffmpeg-static for high-quality video merging...');
+//     execSync('npm install ffmpeg-static', { stdio: 'inherit', cwd: __dirname });
+//     ffmpegPath = require('ffmpeg-static');
+// }
+const ffmpegPath = require("ffmpeg-static");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+// app.use(cors());
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type"]
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Important for form submits!
 
@@ -36,12 +42,22 @@ app.post('/api/info', async (req, res) => {
     }
 
     try {
+        // const info = await ytdlp(url, {
+        //     dumpJson: true,
+        //     noWarnings: true,
+        //     noCallHome: true,
+        //     noCheckCertificate: true,
+        // });
         const info = await ytdlp(url, {
             dumpJson: true,
             noWarnings: true,
             noCallHome: true,
             noCheckCertificate: true,
+            preferFreeFormats: true
         });
+
+
+        
 
         // Determine platform
         let platform = 'Unknown';
