@@ -1,10 +1,22 @@
+// const express = require('express');
+// const cors = require('cors');
+// const { execSync } = require('child_process');
+// const ytdlp = require('yt-dlp-exec').create();
+// const fs = require('fs');
+// const path = require('path');
+// require('dotenv').config();
+
+
 const express = require('express');
 const cors = require('cors');
-const { execSync } = require('child_process');
 const ytdlp = require('yt-dlp-exec').create();
 const fs = require('fs');
 const path = require('path');
+const ffmpegPath = require("ffmpeg-static");
 require('dotenv').config();
+
+
+
 
 // Auto-install ffmpeg-static if missing so 1080p merge works flawlessly!
 // let ffmpegPath;
@@ -15,12 +27,7 @@ require('dotenv').config();
 //     execSync('npm install ffmpeg-static', { stdio: 'inherit', cwd: __dirname });
 //     ffmpegPath = require('ffmpeg-static');
 // }
-try {
-  execSync("yt-dlp --version", { stdio: "ignore" });
-} catch {
-  console.log("Installing yt-dlp...");
-  execSync("pip install -U yt-dlp", { stdio: "inherit" });
-}
+
 
 
 
