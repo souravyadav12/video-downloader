@@ -15,6 +15,15 @@ require('dotenv').config();
 //     execSync('npm install ffmpeg-static', { stdio: 'inherit', cwd: __dirname });
 //     ffmpegPath = require('ffmpeg-static');
 // }
+try {
+  execSync("yt-dlp --version", { stdio: "ignore" });
+} catch {
+  console.log("Installing yt-dlp...");
+  execSync("pip install -U yt-dlp", { stdio: "inherit" });
+}
+
+
+
 const ffmpegPath = require("ffmpeg-static");
 
 const app = express();
@@ -49,7 +58,7 @@ app.post('/api/info', async (req, res) => {
         //     noCheckCertificate: true,
         // });
         const info = await ytdlp(url, {
-            dumpJson: true,
+            dumpSingleJson: true,
             noWarnings: true,
             noCallHome: true,
             noCheckCertificate: true,
