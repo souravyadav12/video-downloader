@@ -19,6 +19,7 @@ app.get("/", (req, res) => {
 /* =========================
    GET VIDEO INFO
 ========================= */
+
 app.post("/api/info", async (req, res) => {
   const { url } = req.body;
 
@@ -31,37 +32,42 @@ app.post("/api/info", async (req, res) => {
       dumpSingleJson: true,
       noWarnings: true,
       noCheckCertificate: true,
-      preferFreeFormats: true,
+      socketTimeout: 15,
       addHeader: [
         "referer:youtube.com",
-        "user-agent:Mozilla/5.0"
+        "user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
       ]
     });
+
+    const formats = info.formats
+      .filter(f => f.height && f.vcodec !== "none")
+      .map(f => ({
+        height: f.height,
+        ext: f.ext
+      }));
 
     res.json({
       title: info.title,
       thumbnail: info.thumbnail,
       duration: info.duration,
       duration_string: info.duration_string,
-      formats: info.formats
-        .filter(f => f.height)
-        .map(f => ({
-          height: f.height,
-          ext: f.ext
-        }))
+      formats
     });
 
   } catch (err) {
-    console.error("INFO ERROR:", err);
+    console.error("INFO ERROR:", err.stderr || err);
+
     res.status(500).json({
       error: "Failed to fetch video info"
     });
   }
 });
 
+
 /* =========================
    DOWNLOAD VIDEO
 ========================= */
+
 app.post("/api/download", async (req, res) => {
   const { url, format } = req.body;
 
@@ -81,18 +87,22 @@ app.post("/api/download", async (req, res) => {
       mergeOutputFormat: "mp4",
       ffmpegLocation: ffmpegPath,
       o: filepath,
+      socketTimeout: 15,
       addHeader: [
         "referer:youtube.com",
-        "user-agent:Mozilla/5.0"
+        "user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
       ]
     });
 
     res.download(filepath, filename, () => {
-      if (fs.existsSync(filepath)) fs.unlinkSync(filepath);
+      if (fs.existsSync(filepath)) {
+        fs.unlinkSync(filepath);
+      }
     });
 
   } catch (err) {
-    console.error("DOWNLOAD ERROR:", err);
+    console.error("DOWNLOAD ERROR:", err.stderr || err);
+
     res.status(500).json({
       error: "Download failed"
     });
@@ -100,5 +110,5 @@ app.post("/api/download", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log("Server running on port " + PORT);
+  console.log(`Server running on port ${PORT}`);
 });
