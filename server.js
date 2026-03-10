@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { execSync } = require('child_process');
-const ytdlp = require('yt-dlp-exec');
+const ytdlp = require('yt-dlp-exec').create();
 const fs = require('fs');
 const path = require('path');
 require('dotenv').config();
@@ -60,7 +60,6 @@ app.post('/api/info', async (req, res) => {
         const info = await ytdlp(url, {
             dumpSingleJson: true,
             noWarnings: true,
-            noCallHome: true,
             noCheckCertificate: true,
             preferFreeFormats: true
         });
@@ -88,10 +87,13 @@ app.post('/api/info', async (req, res) => {
                 format_note: f.format_note
             }))
         });
-    } catch (error) {
-        console.error('Error fetching info:', error);
-        res.status(500).json({ error: 'Failed to fetch video information. Ensure the link is valid and public.' });
-    }
+    } 
+   catch (error) {
+    console.error("YT-DLP ERROR:", error.stderr || error);
+    res.status(500).json({
+        error: "Server failed to fetch video information"
+    });
+}
 });
 
 // Download endpoint
@@ -139,12 +141,13 @@ app.post('/api/download', async (req, res) => {
             }
         });
 
-    } catch (error) {
-        console.error('Error during download:', error);
-        if (!res.headersSent) {
-            res.status(500).json({ error: 'Download failed. Ensure the link is valid.' });
-        }
-    }
+    } 
+    catch (error) {
+    console.error("YT-DLP ERROR:", error.stderr || error);
+    res.status(500).json({
+        error: "Server failed to fetch video information"
+    });
+}
 });
 
 app.listen(PORT, () => {
