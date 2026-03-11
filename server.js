@@ -8,7 +8,11 @@ const ffmpegPath = require("ffmpeg-static");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors({ origin: "*" }));
+app.use(cors({
+  origin: "*", // Or restrict to your Vercel/Netlify domain if preferred
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

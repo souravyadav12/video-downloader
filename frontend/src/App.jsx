@@ -11,6 +11,10 @@ function App() {
     const [downloading, setDownloading] = useState(false);
     const [downloadProgress, setDownloadProgress] = useState(0);
     const [selectedFormat, setSelectedFormat] = useState('1080p');
+    const [isWakingUp, setIsWakingUp] = useState(false);
+
+    // Get API URL from environment matching Vite's syntax, with fallback to Render
+    const API_BASE_URL = import.meta.env.VITE_API_URL || "https://video-downloader-ht22.onrender.com";
 
     // Dynamically build the list of resolutions available for this specific video
     const getAvailableResolutions = () => {
@@ -47,20 +51,28 @@ function App() {
         setError('');
         setVideoInfo(null);
         setSelectedFormat('1080p'); // Reset to a good default for new videos
+        setIsWakingUp(false);
+
+        // Render's free tier spins down after inactivity.
+        // If the request takes longer than 4 seconds, warn the user it's waking up.
+        const wakeUpTimeout = setTimeout(() => {
+            setIsWakingUp(true);
+        }, 4000);
 
         try {
-            const baseUrl = "https://video-downloader-ht22.onrender.com";
-            const response = await axios.post(`${baseUrl}/api/info`, { url });
+            const response = await axios.post(`${API_BASE_URL}/api/info`, { url });
             setVideoInfo(response.data);
         } catch (err) {
             console.error('Fetch error:', err);
             if (err.message === 'Network Error' || (err.code && err.code === 'ERR_NETWORK')) {
-                setError('Cannot connect to the backend server. Please make sure "npm run dev" is running in the main videoDownloder folder.');
+                setError('Cannot connect to the backend server. The server might be down, still waking up, or blocked by your browser.');
             } else {
                 setError(err.response?.data?.error || 'Failed to fetch video information. Ensure the link is valid.');
             }
         } finally {
+            clearTimeout(wakeUpTimeout);
             setLoading(false);
+            setIsWakingUp(false);
         }
     };
 
@@ -72,8 +84,7 @@ function App() {
             // instead of downloading massive 1080p blobs to your browser's RAM via axios!
             const form = document.createElement('form');
             form.method = 'POST';
-           const baseUrl = "https://video-downloader-ht22.onrender.com";
-           form.action = `${baseUrl}/api/download`;
+            form.action = `${API_BASE_URL}/api/download`;
 
             const urlInput = document.createElement('input');
             urlInput.type = 'hidden';
@@ -155,6 +166,16 @@ function App() {
                             )}
                         </button>
                     </form>
+
+                    {/* Cold Start Indicator */}
+                    {isWakingUp && loading && (
+                        <div className="mt-4 p-3 bg-blue-50/80 dark:bg-blue-900/40 rounded-xl border border-blue-100 dark:border-blue-800 animate-fade-in-up text-center">
+                            <p className="text-sm text-blue-800 dark:text-blue-300 font-medium animate-pulse flex items-center justify-center">
+                                <span className="inline-block mr-2 text-xl">☕</span>
+                                Server is waking up from sleep. This may take up to 50 seconds...
+                            </p>
+                        </div>
+                    )}
                 </div>
 
                 {/* Error Message */}
