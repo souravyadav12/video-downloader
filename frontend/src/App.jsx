@@ -14,7 +14,13 @@ function App() {
     const [isWakingUp, setIsWakingUp] = useState(false);
 
     // Get API URL from environment matching Vite's syntax, with fallback to Render
-    const API_BASE_URL = import.meta.env.VITE_API_URL || "https://video-downloader-ht22.onrender.com";
+    // const API_BASE_URL = import.meta.env.VITE_API_URL || "https://video-downloader-ht22.onrender.com";
+    
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  "https://video-downloader-ht22.onrender.com";
+
+fetch(`${API_BASE_URL}/download?url=${videoUrl}`);
 
     // Dynamically build the list of resolutions available for this specific video
     const getAvailableResolutions = () => {

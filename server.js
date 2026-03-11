@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const ytdlp = require("yt-dlp-exec").create();
+const ytdlp = require("yt-dlp-exec").default;
 const fs = require("fs");
 const path = require("path");
 const ffmpegPath = require("ffmpeg-static");
@@ -24,6 +24,46 @@ app.get("/", (req, res) => {
    GET VIDEO INFO
 ========================= */
 
+// app.post("/api/info", async (req, res) => {
+//   const { url } = req.body;
+
+//   if (!url) {
+//     return res.status(400).json({ error: "URL required" });
+//   }
+
+//   try {
+//     const info = await ytdlp(url, {
+//       dumpSingleJson: true,
+//       noWarnings: true,
+//       noCheckCertificates: true,
+//       socketTimeout: 15,
+//      addHeaders: {
+//   referer: "youtube.com",
+//   "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+// }
+//     });
+
+//     const formats = info.formats
+//       .filter(f => f.height && f.vcodec !== "none")
+//       .map(f => ({
+//         height: f.height,
+//         ext: f.ext
+//       }));
+
+//     res.json({
+//       title: info.title,
+//       thumbnail: info.thumbnail,
+//       duration: info.duration,
+//       duration_string: info.duration_string,
+//       formats
+//     });
+
+//   } catch (err) {
+//     console.error("INFO ERROR:", err.stderr || err);
+
+//     res.status(500).json({
+//       error: "Failed to fetch video info"
+//     });
 app.post("/api/info", async (req, res) => {
   const { url } = req.body;
 
@@ -35,12 +75,12 @@ app.post("/api/info", async (req, res) => {
     const info = await ytdlp(url, {
       dumpSingleJson: true,
       noWarnings: true,
-      noCheckCertificate: true,
+      noCheckCertificates: true,
       socketTimeout: 15,
-      addHeader: [
-        "referer:youtube.com",
-        "user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-      ]
+      addHeaders: {
+        referer: "youtube.com",
+        "user-agent": "Mozilla/5.0"
+      }
     });
 
     const formats = info.formats
@@ -60,12 +100,10 @@ app.post("/api/info", async (req, res) => {
 
   } catch (err) {
     console.error("INFO ERROR:", err.stderr || err);
-
-    res.status(500).json({
-      error: "Failed to fetch video info"
-    });
+    res.status(500).json({ error: "Failed to fetch video info" });
   }
 });
+ 
 
 
 /* =========================
