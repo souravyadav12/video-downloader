@@ -9,12 +9,17 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({
-  origin: "*", // Or restrict to your Vercel/Netlify domain if preferred
+  origin: "*",
   methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+/* =========================
+   TEST ROUTE
+========================= */
 
 app.get("/", (req, res) => {
   res.send("Backend running successfully");
@@ -24,46 +29,6 @@ app.get("/", (req, res) => {
    GET VIDEO INFO
 ========================= */
 
-// app.post("/api/info", async (req, res) => {
-//   const { url } = req.body;
-
-//   if (!url) {
-//     return res.status(400).json({ error: "URL required" });
-//   }
-
-//   try {
-//     const info = await ytdlp(url, {
-//       dumpSingleJson: true,
-//       noWarnings: true,
-//       noCheckCertificates: true,
-//       socketTimeout: 15,
-//      addHeaders: {
-//   referer: "youtube.com",
-//   "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-// }
-//     });
-
-//     const formats = info.formats
-//       .filter(f => f.height && f.vcodec !== "none")
-//       .map(f => ({
-//         height: f.height,
-//         ext: f.ext
-//       }));
-
-//     res.json({
-//       title: info.title,
-//       thumbnail: info.thumbnail,
-//       duration: info.duration,
-//       duration_string: info.duration_string,
-//       formats
-//     });
-
-//   } catch (err) {
-//     console.error("INFO ERROR:", err.stderr || err);
-
-//     res.status(500).json({
-//       error: "Failed to fetch video info"
-//     });
 app.post("/api/info", async (req, res) => {
   const { url } = req.body;
 
@@ -72,6 +37,7 @@ app.post("/api/info", async (req, res) => {
   }
 
   try {
+
     const info = await ytdlp(url, {
       dumpSingleJson: true,
       noWarnings: true,
@@ -103,14 +69,13 @@ app.post("/api/info", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch video info" });
   }
 });
- 
-
 
 /* =========================
    DOWNLOAD VIDEO
 ========================= */
 
 app.post("/api/download", async (req, res) => {
+
   const { url, format } = req.body;
 
   if (!url || !format) {
@@ -150,6 +115,10 @@ app.post("/api/download", async (req, res) => {
     });
   }
 });
+
+/* =========================
+   START SERVER
+========================= */
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
