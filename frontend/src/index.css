@@ -3,26 +3,229 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    scroll-behavior: smooth;
+  }
   body {
-    @apply antialiased;
+    @apply antialiased bg-gray-50 text-gray-900;
+  }
+  html.dark body {
+    @apply bg-gray-950 text-gray-100;
   }
 }
 
+/* ========================
+   SPINNER
+========================= */
 .spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid rgba(0, 0, 0, 0.1);
-  border-left-color: #3b82f6;
+  border: 4px solid rgba(255,255,255,0.1);
+  border-left-color: #6366f1;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-.spinner-dark {
-  border: 4px solid rgba(255, 255, 255, 0.1);
-  border-left-color: #60a5fa;
+  animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
+  0%   { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* ========================
+   ANIMATIONS
+========================= */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(99,102,241,0.3); }
+  50%       { box-shadow: 0 0 40px rgba(99,102,241,0.6), 0 0 60px rgba(139,92,246,0.3); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
+
+@keyframes gradient-x {
+  0%, 100% { background-position: 0% 50%; }
+  50%       { background-position: 100% 50%; }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.35s ease-out both;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out both;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-x 4s ease infinite;
+}
+
+/* ========================
+   SKELETON LOADER
+========================= */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(0,0,0,0.06) 25%,
+    rgba(0,0,0,0.1) 50%,
+    rgba(0,0,0,0.06) 75%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 1.5s infinite linear;
+  border-radius: 8px;
+}
+
+html.dark .skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.05) 25%,
+    rgba(255,255,255,0.1) 50%,
+    rgba(255,255,255,0.05) 75%
+  );
+  background-size: 1000px 100%;
+}
+
+/* ========================
+   GLASS MORPHISM — Light Mode
+========================= */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.glass-dark {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Dark mode overrides */
+html.dark .glass {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+html.dark .glass-dark {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ========================
+   CUSTOM SCROLLBAR
+========================= */
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 9999px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+
+/* ========================
+   AD ZONES
+========================= */
+.ad-zone {
+  background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(139,92,246,0.06));
+  border: 1px dashed rgba(99,102,241,0.25);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.ad-zone:hover {
+  border-color: rgba(99,102,241,0.4);
+  background: linear-gradient(135deg, rgba(99,102,241,0.09), rgba(139,92,246,0.09));
+}
+
+.ad-zone::before {
+  content: 'Advertisement';
+  position: absolute;
+  top: 6px;
+  left: 10px;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(0,0,0,0.25);
+  font-weight: 600;
+}
+
+html.dark .ad-zone::before {
+  color: rgba(255,255,255,0.25);
+}
+
+/* ========================
+   GRADIENT TEXT
+========================= */
+.gradient-text {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ========================
+   PREMIUM BUTTON
+========================= */
+.btn-primary {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  box-shadow: 0 4px 20px rgba(99,102,241,0.35);
+  transition: all 0.25s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(99,102,241,0.5);
+  background: linear-gradient(135deg, #5558e8, #7c3aed);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* ========================
+   PROGRESS BAR
+========================= */
+.progress-bar {
+  height: 3px;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899);
+  background-size: 200% 100%;
+  animation: gradient-x 2s ease infinite, shimmer 2s ease infinite;
+  border-radius: 9999px;
+}
+
+/* ========================
+   INPUT FOCUS GLOW
+========================= */
+.input-glow:focus {
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.25), 0 0 20px rgba(99,102,241,0.1);
 }
